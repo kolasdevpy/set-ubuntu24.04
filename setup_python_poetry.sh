@@ -136,7 +136,10 @@ su - "$TARGET_USER" -c "
 # ✅ Final summary
 # ─────────────────────────────────────────────────────────────
 echo -e "\n${GREEN}🎉 Python + Poetry setup complete!${NC}"
-echo "🔹 Python: $(su - "$TARGET_USER" -c "export PYENV_ROOT=\"\$HOME/.pyenv\" && export PATH=\"\$PYENV_ROOT/bin:\$PATH\" && eval \"\$(pyenv init -)\" && python --version")"
-echo "🔹 Poetry: $(su - "$TARGET_USER" -c "export PATH=\"\$HOME/.local/bin:\$PATH\" && poetry --version 2>/dev/null || echo 'Re-login required')"
+echo "🔹 Python: $PYTHON_VERSION installed via pyenv"
+echo "🔹 Poetry: installed to ~/.local/bin"
 echo -e "💡 ${YELLOW}IMPORTANT: Re-login or run 'source ~/.bashrc' to apply PATH changes${NC}"
-echo -e "💡 Create a project: ${YELLOW}poetry new mybot && cd mybot && poetry add python-telegram-bot${NC}"
+echo -e "💡 Verify manually:"
+echo -e "   ${YELLOW}source ~/.bashrc && python --version${NC}"
+echo -e "   ${YELLOW}source ~/.bashrc && poetry --version${NC}"
+echo -e "💡 Create a project: ${YELLOW}poetry new myapp && cd myapp && poetry add python-telegram-bot${NC}"
