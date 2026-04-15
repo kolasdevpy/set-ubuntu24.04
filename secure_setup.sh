@@ -2,9 +2,15 @@
 set -euo pipefail
 
 # ============================================================
+# ABOUT
 # Secure Ubuntu 24.04 Server Setup Script
 # Run: sudo bash secure_server_setup.sh [path_to_public_key]
 # Default key path: /root/.ssh/authorized_keys
+
+# SETUP
+# wget https://raw.githubusercontent.com/.../secure_server_setup.sh   # или создайте файл вручную
+# chmod +x secure_server_setup.sh
+# sudo ./secure_server_setup.sh
 # ============================================================
 
 # --- Settings ---
