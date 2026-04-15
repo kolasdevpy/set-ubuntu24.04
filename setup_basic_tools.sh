@@ -7,7 +7,7 @@ set -euo pipefail
 
 # wget https://raw.githubusercontent.com/kolasdevpy/set-ubuntu22.04/main/setup_basic_tools.sh
 # chmod +x setup_basic_tools.sh
-# sudo setup_basic_tools.sh
+# sudo ./setup_basic_tools.sh
 # ============================================================
 
 
