@@ -4,11 +4,12 @@ set -euo pipefail
 # ============================================================
 # PYTHON + POETRY SETUP FOR UBUNTU 24.04
 # Installs: pyenv, Python 3.12.13, Poetry
+# Usage: ./setup_python_poetry.sh [python_version]
+
 
 # wget https://raw.githubusercontent.com/kolasdevpy/set-ubuntu22.04/main/setup_python_poetry.sh
 # chmod +x setup_python_poetry.sh
-# Usage: ./setup_python_poetry.sh [python_version]
-# Example: ./setup_python_poetry.sh 3.12.13
+# ./setup_python_poetry.sh 3.12.13
 # ============================================================
 
 # 🎨 Colors
