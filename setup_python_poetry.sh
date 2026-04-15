@@ -12,6 +12,7 @@ set -euo pipefail
 # ./setup_python_poetry.sh 3.12.13
 # ============================================================
 sudo apt-get update -y
+PYTHON_VERSION="${1:-3.12.13}"
 
 # PYTHON
 # install Python dependencies
@@ -32,8 +33,8 @@ export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
 pyenv update
-pyenv install 3.12.13
-pyenv global 3.12.13
+pyenv install $PYTHON_VERSION
+pyenv global $PYTHON_VERSION
 
 # Creating simlinks for python3
 sudo ln -sf "$PYENV_ROOT/versions/3.12.13/bin/python3" /usr/local/bin/python
