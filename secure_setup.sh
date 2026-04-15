@@ -66,6 +66,6 @@ if ! sshd -t; then
     exit 1
 fi
 
-# Reload instead of restart to avoid dropping active sessions
-systemctl reload ssh
+# Reload or restart SSH to apply changes (works whether service is running or not)
+systemctl reload-or-restart ssh
 echo "✅ SSH reconfigured successfully. Drop-in file: $SSH_DROPIN"
