@@ -115,18 +115,21 @@ fi
 
 systemctl restart ssh
 
-# --- 5. Test new connection before locking root and enabling UFW ---
-log "Waiting 5 seconds for SSH to stabilize..."
-sleep 5
-log "Verifying that user $NEW_USER can log in via SSH key..."
-if ssh -o ConnectTimeout=5 -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -p "$SSH_PORT" "$NEW_USER@localhost" exit; then
-    log "Login successful for $NEW_USER using SSH key."
-else
-    error "Failed to log in as $NEW_USER via SSH key. Rolling back SSH changes."
-    rm -f "$DROPPIN_FILE"
-    systemctl restart ssh
-    exit 1
-fi
+# --- 5. Manual verification ---
+log "SSH settings have been applied (password login disabled, root key login allowed)."
+echo "====================================================="
+echo "IMPORTANT: Before proceeding, please open a NEW terminal"
+echo "and verify that you can log in as $NEW_USER using your SSH key:"
+echo ""
+echo "  ssh $NEW_USER@<server-ip> -p $SSH_PORT -i your_private_key"
+echo ""
+echo "Also test root login (optional):"
+echo "  ssh root@<server-ip> -p $SSH_PORT -i your_private_key"
+echo ""
+echo "If login fails, DO NOT continue. Press Ctrl+C now to abort."
+echo "Otherwise, press Enter to proceed with locking root, UFW, fail2ban, etc."
+echo "====================================================="
+read -p "Press Enter to continue..." -r
 
 # --- 6. Lock root password (console protection) ---
 log "Locking root password..."
