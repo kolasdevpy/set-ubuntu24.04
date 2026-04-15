@@ -78,4 +78,7 @@ sudo systemctl restart docker
 docker --version
 docker compose version
 
-echo "Reload the terminal"
+echo "------------------------------"
+echo "⚠️  Reload the terminal"
+echo "⚠️  run: sudo usermod -aG docker admin"
+echo "⚠️  run: newgrp docker"
