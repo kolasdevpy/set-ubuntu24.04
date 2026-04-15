@@ -11,135 +11,42 @@ set -euo pipefail
 # chmod +x setup_python_poetry.sh
 # ./setup_python_poetry.sh 3.12.13
 # ============================================================
+sudo apt-get update -y
 
-# 🎨 Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# PYTHON
+# install Python dependencies
+sudo apt-get install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev \
+libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget libbz2-dev liblzma-dev
 
-info()  { echo -e "${GREEN}[INFO]${NC} $1"; }
-warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
-error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
-step()  { echo -e "\n${BLUE}➤ $1${NC}"; }
+# install pyenv
+curl -fsSL https://pyenv.run | bash
 
-# 📝 Defaults
-PYTHON_VERSION="${1:-3.12.13}"
-TARGET_USER="${SUDO_USER:-${USERNAME:-$(logname 2>/dev/null || echo "$USER")}}"
-HOME_DIR="/home/$TARGET_USER"
-BASHRC="$HOME_DIR/.bashrc"
+# Add pyenv to PATH
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 
-# 🔒 Check if running as root (required for system packages)
-if [[ $EUID -ne 0 ]]; then
-   warn "This script installs system packages. Retrying with sudo..."
-   exec sudo bash "$0" "$@"
-fi
-
-export DEBIAN_FRONTEND=noninteractive
-
-# ─────────────────────────────────────────────────────────────
-# 1. Install build dependencies for Python compilation
-# ─────────────────────────────────────────────────────────────
-step "Installing build dependencies..."
-apt-get update -y
-apt-get install -y \
-    git curl wget build-essential zlib1g-dev libncurses5-dev \
-    libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev \
-    libsqlite3-dev libbz2-dev liblzma-dev
-
-# ─────────────────────────────────────────────────────────────
-# 2. Install pyenv
-# ─────────────────────────────────────────────────────────────
-step "Installing pyenv..."
-if [[ -d "$HOME_DIR/.pyenv" ]]; then
-    warn "pyenv already exists. Skipping installation."
-else
-    # Run pyenv installer as target user
-    su - "$TARGET_USER" -c 'curl -fsSL https://pyenv.run | bash'
-fi
-
-# ─────────────────────────────────────────────────────────────
-# 3. Configure PATH for pyenv (avoid duplicates)
-# ─────────────────────────────────────────────────────────────
-step "Configuring shell for pyenv..."
-PYENV_INIT_BLOCK='# >>> pyenv init >>>
+# Update pyenv and instaal Python
 export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
-# <<< pyenv init <<<'
 
-if ! grep -q "pyenv init" "$BASHRC" 2>/dev/null; then
-    echo "$PYENV_INIT_BLOCK" >> "$BASHRC"
-    info "pyenv configuration added to $BASHRC"
-else
-    warn "pyenv already configured in $BASHRC"
-fi
+pyenv update
+pyenv install 3.12.13
+pyenv global 3.12.13
 
-# ─────────────────────────────────────────────────────────────
-# 4. Install Python via pyenv
-# ─────────────────────────────────────────────────────────────
-step "Installing Python $PYTHON_VERSION via pyenv..."
-su - "$TARGET_USER" -c "
-    export PYENV_ROOT=\"\$HOME/.pyenv\"
-    export PATH=\"\$PYENV_ROOT/bin:\$PATH\"
-    eval \"\$(pyenv init -)\"
-    pyenv update --quiet
-    pyenv install -s $PYTHON_VERSION
-    pyenv global $PYTHON_VERSION
-"
+# Creating simlinks for python3
+sudo ln -sf "$PYENV_ROOT/versions/3.12.13/bin/python3" /usr/local/bin/python
+sudo ln -sf "$PYENV_ROOT/versions/3.12.13/bin/python3" /usr/local/bin/python3
 
-# ─────────────────────────────────────────────────────────────
-# 5. Verify Python installation
-# ─────────────────────────────────────────────────────────────
-step "Verifying Python installation..."
-PYTHON_BIN="$HOME_DIR/.pyenv/versions/$PYTHON_VERSION/bin/python3"
-if [[ -x "$PYTHON_BIN" ]]; then
-    su - "$TARGET_USER" -c "$PYTHON_BIN --version"
-    info "✅ Python $PYTHON_VERSION installed successfully"
-else
-    error "Python binary not found at $PYTHON_BIN"
-fi
+python --version
+python3 --version
 
-# ─────────────────────────────────────────────────────────────
-# 6. Install Poetry
-# ─────────────────────────────────────────────────────────────
-step "Installing Poetry..."
-su - "$TARGET_USER" -c "
-    export PYENV_ROOT=\"\$HOME/.pyenv\"
-    export PATH=\"\$PYENV_ROOT/versions/$PYTHON_VERSION/bin:\$PATH\"
-    curl -sSL https://install.python-poetry.org | python3 -
-"
 
-# Configure PATH for Poetry (~/.local/bin)
-POETRY_PATH_BLOCK='# >>> poetry PATH >>>
-export PATH="\$HOME/.local/bin:\$PATH"
-# <<< poetry PATH <<<'
+# POETRY
+# Install Poetry
+curl -sSL https://install.python-poetry.org | python3 -
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+export PATH="$HOME/.local/bin:$PATH"
 
-if ! grep -q "poetry PATH" "$BASHRC" 2>/dev/null; then
-    echo "$POETRY_PATH_BLOCK" >> "$BASHRC"
-    info "Poetry PATH added to $BASHRC"
-else
-    warn "Poetry PATH already configured in $BASHRC"
-fi
-
-# ─────────────────────────────────────────────────────────────
-# 7. Verify Poetry installation
-# ─────────────────────────────────────────────────────────────
-step "Verifying Poetry installation..."
-su - "$TARGET_USER" -c "
-    export PATH=\"\$HOME/.local/bin:\$PATH\"
-    poetry --version
-"
-
-# ─────────────────────────────────────────────────────────────
-# ✅ Final summary
-# ─────────────────────────────────────────────────────────────
-echo -e "\n${GREEN}🎉 Python + Poetry setup complete!${NC}"
-echo "🔹 Python: $PYTHON_VERSION installed via pyenv"
-echo "🔹 Poetry: installed to ~/.local/bin"
-echo -e "💡 ${YELLOW}IMPORTANT: Re-login or run 'source ~/.bashrc' to apply PATH changes${NC}"
-echo -e "💡 Verify manually:"
-echo -e "   ${YELLOW}source ~/.bashrc && python --version${NC}"
-echo -e "   ${YELLOW}source ~/.bashrc && poetry --version${NC}"
-echo -e "💡 Create a project: ${YELLOW}poetry new myapp && cd myapp && poetry add python-telegram-bot${NC}"
+poetry --version
