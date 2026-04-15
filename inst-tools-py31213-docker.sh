@@ -1,8 +1,16 @@
 #!/bin/bash
+set -e
+
+# rm -f secure_setup.sh
+# wget https://raw.githubusercontent.com/kolasdevpy/set-ubuntu22.04/main/inst-tools-py31213-docker.sh
+# chmod +x inst-tools-py31213-docker.sh
+# sudo ./inst-tools-py31213-docker.sh
+
 sudo apt-get update -y
 
 # install base tools
 sudo apt-get install -y git htop tree zip unzip gzip
+
 
 
 # PYTHON
@@ -61,13 +69,13 @@ echo \
 sudo apt-get update
 
 # Install the latest version
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 sudo usermod -aG docker "$USER"
-
-sudo newgrp docker
 
 sudo systemctl restart docker
 
 docker --version
 docker compose version
+
+echo "Reload the terminal"
