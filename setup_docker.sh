@@ -4,14 +4,14 @@ set -euo pipefail
 # ============================================================
 # DOCKER ENGINE SETUP FOR UBUNTU 24.04
 # Installs: Docker CE, Buildx, Compose plugin
-# Usage: sudo ./setup_docker.sh [username]
+# Usage: sudo ./setup_docker.sh
 
 # wget https://raw.githubusercontent.com/kolasdevpy/set-ubuntu22.04/main/setup_docker.sh
 # chmod +x setup_docker.sh
-# sudo ./setup_docker.sh admin
+# sudo ./setup_docker.sh
 # ============================================================
 
- DOCKER
+# DOCKER
 # Add Docker's official GPG key:
 sudo apt-get update
 sudo apt-get install ca-certificates curl
