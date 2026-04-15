@@ -38,5 +38,5 @@ sudo docker compose version
 
 echo "------------------------------"
 echo "⚠️  Reload the terminal"
-echo "run ⚠️  sudo usermod -aG docker admin"
-echo "run ⚠️  newgrp docker"
+echo "⚠️  run: sudo usermod -aG docker admin"
+echo "⚠️  run: newgrp docker"
