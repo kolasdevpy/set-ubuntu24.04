@@ -9,8 +9,8 @@ set -euo pipefail
 
 # SETUP
 # wget https://github.com/kolasdevpy/set-ubuntu22.04/blob/main/secure_setup.sh
-# chmod +x secure_server_setup.sh
-# sudo ./secure_server_setup.sh
+# chmod +x secure_setup.sh
+# sudo ./secure_setup.sh
 # ============================================================
 
 # --- Settings ---
