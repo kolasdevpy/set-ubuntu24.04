@@ -6,8 +6,6 @@ set -e
 # chmod +x inst-tools-py31213-docker.sh
 # ./inst-tools-py31213-docker.sh
 
-set -e
-
 # Determine the real user (even if run via sudo)
 CURRENT_USER=$(whoami)
 if [ "$CURRENT_USER" = "root" ]; then
