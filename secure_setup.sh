@@ -180,3 +180,14 @@ echo -e "   Restarting in 3 seconds...\n"
 sleep 3
 
 systemctl restart ssh
+
+sleep 2
+
+echo -e "\n✅ SSH service restarted."
+echo "🔍 Verify that SSH listens on port $NEW_SSH_PORT:"
+echo "   sudo ss -tlnp | grep :$NEW_SSH_PORT"
+echo "   or: sudo systemctl status ssh"
+echo ""
+echo "⚠️  Your current session will remain active until you type 'exit'."
+echo "   After that, reconnect using:"
+echo "   ssh -p $NEW_SSH_PORT $ORIGINAL_USER@$SERVER_IP"
