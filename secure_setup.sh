@@ -12,7 +12,10 @@ set -euo pipefail
 # Example: sudo ./secure_setup.sh 2222
 # ============================================================
 
-# --- Проверка аргументов и прав ---
+
+
+
+# ===== Checking arguments and rights =====
 if [[ $EUID -ne 0 ]]; then
    echo "❌ This script must be run as root: sudo $0 <PORT>"
    exit 1
@@ -47,13 +50,16 @@ export DEBIAN_FRONTEND=noninteractive
 
 
 
-# ===== update =====
+# ===== update & nstall =====
 apt-get update -y
 apt-get upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 apt-get autoremove -y
 apt-get clean
 
 apt-get install -y ufw fail2ban
+
+
+
 
 # ===== sshd_config =====
 echo -e "\n[1/4] Configuring SSH on port $NEW_SSH_PORT (password auth disabled)..."
@@ -68,6 +74,7 @@ KbdInteractiveAuthentication no
 PubkeyAuthentication yes
 EOF
 
+
 # ===== config of cloud-init =====
 CLOUD_INIT_SSH="/etc/ssh/sshd_config.d/50-cloud-init.conf"
 if [[ -f "$CLOUD_INIT_SSH" ]]; then
@@ -80,6 +87,7 @@ fi
 mkdir -p /run/sshd
 chmod 755 /run/sshd
 
+
 # ===== SSH config validation =====
 if ! sshd -t; then
     echo "❌ SSH configuration test failed. Rolling back..."
@@ -89,7 +97,7 @@ fi
 
 
 
-# ---  UFW allow SSH port) ---
+# ===== UFW =====
 echo -e "\n[2/4] Configuring UFW: allow only port $NEW_SSH_PORT/tcp..."
 ufw default deny incoming
 ufw default allow outgoing
@@ -98,10 +106,11 @@ echo "✅ If you want to allow other ports:"
 echo "ufw allow 80/tcp"
 echo "ufw allow 443/tcp"
 
-# ===== UFW =====
 echo "y" | ufw enable
 ufw status verbose
 echo "✅ UFW enabled. Only port $NEW_SSH_PORT/tcp is open."
+
+
 
 # ===== ICMP =====
 echo -e "\n[3/4] Configuring ICMP filtering (allow essential types, rate-limit ping)..."
@@ -132,6 +141,7 @@ else
 fi
 
 
+
 # ===== Fail2Ban for SSH =====
 echo -e "\n[4/4] Installing and configuring Fail2Ban for SSH on port $NEW_SSH_PORT..."
 FAIL2BAN_JAIL_LOCAL="/etc/fail2ban/jail.local"
@@ -154,6 +164,7 @@ EOF
 systemctl enable fail2ban
 systemctl restart fail2ban
 echo "✅ Fail2Ban installed and protecting SSH on port $NEW_SSH_PORT."
+
 
 
 # ===== FINAL RESTART SSH =====
